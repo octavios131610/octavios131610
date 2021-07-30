@@ -1,0 +1,41 @@
+%% Questão 5
+%Octavio Silva de Carvalho
+
+%% Aplicação da equações do problema
+
+clear %Limpar os dados de variáveis no banco de dados do programa
+clc %limpar linhas da janela de comando
+
+%
+syms s t F(t) F(s) X1 X2 X3
+% Declarando as equações de movimento
+Eq1 = ((2*s^2)+(2*s)+1)*X1 - (s*X2) - (s+1)*X3 == 0;
+Eq2 = (-s)*X1 + ((s^2)+(2*s)+1)*X2 - (s+1)*X3 == 0;
+Eq3 = (-s-1)*X1 - (s+1)*X2 + (s^2 + 2*s + 2)*X3 == F(s);
+% Realizando as transformações inversas de Laplace
+Eq4 = ilaplace(Eq1);
+pretty(Eq4);
+
+Eq5 = ilaplace(Eq2);
+pretty(Eq5);
+
+Eq6 = ilaplace(Eq3);
+pretty(Eq6);
+%Definindo as variáveis de estado
+z1=X1*dirac(t);
+z2=X1*dirac(t)';
+z3=X2*dirac(t);
+z4=X2*dirac(t)';
+z5=X3*dirac(t);
+z6=X3*dirac(t)';
+z = [z1; z2; z3; z4; z5; z6];
+%Reescrevendo as equações de estado
+z1*dirac(1) == z2;
+z2*dirac(1) == -z2 - 0.5*z1 + 0.5*z4 + 0.5*z6 + 0.5*z5;
+z3*dirac(1) == z4;
+z4*dirac(1) == z2 - 2*z4 - z3 + z6 + z5;
+z5*dirac(1) == z6;
+z6*dirac(1) == z2 + z1 + z4 + z3 - 2*z6 - 2*z5 + F(t);
+% Convertendo para matriz de vetores
+zz = [0 1 0 0 0 0; -0.5 -1 0 0.5 0.5 0.5; 0 0 0 1 0 0; 0 1 -1 -2 1 1; 0 0 0 0 0 1; 1 1 1 1 -2 -2]*z + [0; 0; 0; 0; 0; 1]*F(t);
+y = [1 0 0 0 0 0]*z;
